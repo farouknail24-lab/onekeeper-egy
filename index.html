@@ -81,7 +81,7 @@
         .product-price { font-size: 16px; font-weight: 900; color: var(--accent); }
         .product-old-price { font-size: 13px; color: var(--text-muted); text-decoration: line-through; }
 
-        /* Admin Panel (Hidden for normal users) */
+        /* Admin Panel */
         #admin-panel { display: none; background: #121212; border: 2px dashed var(--accent); padding: 35px; margin-bottom: 50px; border-radius: 12px; text-align: left; }
         html[dir="rtl"] #admin-panel { text-align: right; }
         #admin-panel h2 { margin-bottom: 25px; color: var(--accent); font-size: 20px; font-weight: 800; }
@@ -90,7 +90,6 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; margin-bottom: 8px; color: #bbb; font-weight: 600; }
         .form-group input, .form-group select { width: 100%; padding: 12px; background: #1c1c1c; border: 1px solid var(--border-color); color: #fff; border-radius: 6px; font-size: 14px; outline: none; }
-        .form-group input[type="file"] { padding: 9px; cursor: pointer; }
         
         .btn-delete-prod { width: 100%; padding: 8px; font-size: 11px; background: rgba(255,51,51,0.1); color: #ff4444; border: 1px solid rgba(255,51,51,0.2); border-radius: 6px; margin-top: 8px; cursor: pointer; font-weight: 700; }
         .json-box { margin-top: 20px; background: #0a0a0a; padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); }
@@ -121,7 +120,6 @@
 
     <div class="container" id="shop">
         
-        <!-- لوحة التحكم السرية (لا تظهر إلا للرابط السري فقط) -->
         <div id="admin-panel">
             <h2 id="admin-title">⚙️ Admin Control Panel (JSON Generator)</h2>
             <div class="form-grid">
@@ -150,22 +148,20 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Upload Images (Select Multiple)</label>
-                    <input type="file" id="p-img-files" accept="image/*" multiple>
+                    <label>Image Links (Comma Separated URLs)</label>
+                    <input type="text" id="p-imgs" placeholder="https://link1.com/img.jpg, https://link2.com/img2.jpg">
                 </div>
             </div>
             <button class="btn" onclick="addNewProductToJSON()">Add Product & Generate JSON</button>
 
             <div class="json-box">
-                <label style="color: var(--accent); font-size: 12px; margin-bottom: 5px; display: block;">📋 Copy this updated code and paste it inside 'products.json' on GitHub:</label>
+                <label style="color: var(--accent); font-size: 12px; margin-bottom: 5px; display: block;">📋 Copy this code and update 'products.json' on GitHub:</label>
                 <textarea id="json-output" readonly></textarea>
             </div>
         </div>
 
         <div class="section-title" id="sec-title">FEATURED PRODUCTS</div>
-        <div class="products-grid" id="products-container">
-            <!-- المنتجات -->
-        </div>
+        <div class="products-grid" id="products-container"></div>
     </div>
 
     <script>
@@ -269,7 +265,7 @@
                 
                 if (p.imgs && p.imgs.length > 0) {
                     p.imgs.forEach((imgUrl, i) => {
-                        imagesHtml += `<div class="product-img ${i === 0 ? 'active' : ''}" style="background-image: url('${imgUrl}')"></div>`;
+                        imagesHtml += `<div class="product-img ${i === 0 ? 'active' : ''}" style="background-image: url('${imgUrl.trim()}')"></div>`;
                     });
                     
                     if (p.imgs.length > 1) {
@@ -282,8 +278,6 @@
 
                 let discountHtml = p.discount ? `<div class="discount-badge">${p.discount}</div>` : '';
                 let oldPriceHtml = p.oldPrice ? `<span class="product-old-price">${p.oldPrice}</span>` : '';
-
-                // زر الحذف يظهر فقط إذا دخل من الرابط السري الخاص بك
                 let adminDeleteBtn = isAdmin ? `<button class="btn-delete-prod" onclick="deleteProduct(${pIndex})">${t.delBtn}</button>` : '';
 
                 container.innerHTML += `
@@ -335,40 +329,19 @@
             const oldPrice = document.getElementById('p-old-price').value;
             const discount = document.getElementById('p-discount').value;
             const cat = document.getElementById('p-cat').value;
-            const fileInput = document.getElementById('p-img-files');
+            const imgsInput = document.getElementById('p-imgs').value;
 
             if(!name || !price) {
                 alert('Please enter product name and current price!');
                 return;
             }
 
-            const files = fileInput.files;
-            let imageArray = [];
+            const imgs = imgsInput ? imgsInput.split(',').map(s => s.trim()) : ['https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80'];
 
-            if (files.length > 0) {
-                let processed = 0;
-                for (let i = 0; i < files.length; i++) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        imageArray.push(e.target.result);
-                        processed++;
-                        if (processed === files.length) {
-                            finalizeNewProduct(name, price, oldPrice, discount, cat, imageArray);
-                        }
-                    };
-                    reader.readAsDataURL(files[i]);
-                }
-            } else {
-                imageArray.push('https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80');
-                finalizeNewProduct(name, price, oldPrice, discount, cat, imageArray);
-            }
-        }
-
-        function finalizeNewProduct(name, price, oldPrice, discount, cat, imgs) {
             allProducts.push({ name, price, oldPrice, discount, cat, imgs });
             renderProducts();
             updateJsonOutput();
-            alert('Product added successfully! Copy the JSON code below and update your products.json file on GitHub.');
+            alert('Product added! Copy the JSON code below and update your products.json file on GitHub.');
         }
 
         function deleteProduct(index) {
