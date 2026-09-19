@@ -12,7 +12,6 @@
         header { background: #000; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000; }
         .top-bar { background: #00ff66; color: #000; text-align: center; font-size: 13px; font-weight: 700; padding: 6px; display: flex; justify-content: center; align-items: center; gap: 20px; }
         
-        /* زر تبديل اللغة */
         .lang-switch { background: #000; color: #00ff66; border: 1px solid #000; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; }
         .lang-switch:hover { background: #222; }
 
@@ -100,7 +99,7 @@
 
     <div class="container" id="shop">
         
-        <!-- لوحة التحكم السرية -->
+        <!-- لوحة التحكم السرية لإضافة المنتجات -->
         <div id="admin-panel">
             <h2 id="admin-title">⚙️ Admin Control Panel</h2>
             <div class="form-group">
@@ -176,7 +175,7 @@
                 lblNames: "اسم المنتج",
                 lblOld: "السعر الأساسي (قبل الخصم) - اختياري",
                 lblCur: "السعر الحالي (أو بعد الخصم)",
-                lblDisc: "نسبة أو شاشة الخصم (إن وجدت)",
+                lblDisc: "نسبة أو شارة الخصم (إن وجدت)",
                 lblCat: "القسم",
                 lblImg: "اختر صور المنتج من جهازك (متعددة)",
                 btnAdd: "إضافة المنتج للموقع",
@@ -203,7 +202,7 @@
         ];
 
         function getProducts() {
-            const saved = localStorage.getItem('onekeeper_products_bilingual');
+            const saved = localStorage.getItem('onekeeper_products_bilingual_v2');
             return saved ? JSON.parse(saved) : defaultProducts;
         }
 
@@ -233,7 +232,6 @@
             document.getElementById('hero-btn').innerText = t.heroBtn;
             document.getElementById('sec-title').innerText = t.secTitle;
             
-            // Admin panel texts
             document.getElementById('admin-title').innerText = t.adminTitle;
             document.getElementById('lbl-name').innerText = t.lblNames;
             document.getElementById('lbl-old').innerText = t.lblOld;
@@ -243,7 +241,6 @@
             document.getElementById('lbl-img').innerText = t.lblImg;
             document.getElementById('btn-add').innerText = t.btnAdd;
 
-            // Navigation links
             document.querySelectorAll('.nav-links a').forEach(a => {
                 a.innerText = a.getAttribute(`data-${currentLang}`);
             });
@@ -360,7 +357,7 @@
         function saveProductData(name, price, oldPrice, discount, cat, imgs) {
             const products = getProducts();
             products.push({ name, price, oldPrice, discount, cat, imgs });
-            localStorage.setItem('onekeeper_products_bilingual', JSON.stringify(products));
+            localStorage.setItem('onekeeper_products_bilingual_v2', JSON.stringify(products));
             
             document.getElementById('p-name').value = '';
             document.getElementById('p-price').value = '';
@@ -372,13 +369,12 @@
             alert(currentLang === 'ar' ? 'تم إضافة المنتج بنجاح!' : 'Product added successfully!');
         }
 
-## حذف المنتج
         function deleteProduct(index) {
             const t = translations[currentLang];
             if(confirm(t.deleteConfirm)) {
                 const products = getProducts();
                 products.splice(index, 1);
-                localStorage.setItem('onekeeper_products_bilingual', JSON.stringify(products));
+                localStorage.setItem('onekeeper_products_bilingual_v2', JSON.stringify(products));
                 renderProducts();
             }
         }
