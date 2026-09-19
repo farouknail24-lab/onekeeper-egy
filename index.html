@@ -91,9 +91,8 @@
         .form-group label { display: block; font-size: 13px; margin-bottom: 8px; color: #bbb; font-weight: 600; }
         .form-group input, .form-group select { width: 100%; padding: 12px; background: #1c1c1c; border: 1px solid var(--border-color); color: #fff; border-radius: 6px; font-size: 14px; outline: none; }
         
-        .btn-delete-prod { width: 100%; padding: 8px; font-size: 11px; background: rgba(255,51,51,0.1); color: #ff4444; border: 1px solid rgba(255,51,51,0.2); border-radius: 6px; margin-top: 8px; cursor: pointer; font-weight: 700; }
         .json-box { margin-top: 20px; background: #0a0a0a; padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); }
-        .json-box textarea { width: 100%; height: 100px; background: #111; color: var(--accent); border: none; padding: 10px; font-family: monospace; font-size: 12px; resize: none; }
+        .json-box textarea { width: 100%; height: 90px; background: #111; color: var(--accent); border: none; padding: 10px; font-family: monospace; font-size: 12px; resize: none; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -121,14 +120,18 @@
     <div class="container" id="shop">
         
         <div id="admin-panel">
-            <h2 id="admin-title">⚙️ Admin Control Panel (JSON Generator)</h2>
+            <h2 id="admin-title">⚙️ Admin Control Panel (Multi-File Generator)</h2>
             <div class="form-grid">
+                <div class="form-group">
+                    <label>Product File Name (e.g. product2.json)</label>
+                    <input type="text" id="p-filename" placeholder="product2.json">
+                </div>
                 <div class="form-group">
                     <label>Product Name</label>
                     <input type="text" id="p-name" placeholder="e.g. OneKeeper Hybrid Pro">
                 </div>
                 <div class="form-group">
-                    <label>Base Price (Before Discount) - Optional</label>
+                    <label>Base Price (Before Discount)</label>
                     <input type="text" id="p-old-price" placeholder="e.g. EGP 4,200">
                 </div>
                 <div class="form-group">
@@ -136,7 +139,7 @@
                     <input type="text" id="p-price" placeholder="e.g. EGP 3,500">
                 </div>
                 <div class="form-group">
-                    <label>Discount Tag (if any)</label>
+                    <label>Discount Tag</label>
                     <input type="text" id="p-discount" placeholder="e.g. 15% OFF">
                 </div>
                 <div class="form-group">
@@ -147,16 +150,19 @@
                         <option value="CLOTHING">Clothing</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="grid-column: span 2;">
                     <label>Image Links (Comma Separated URLs)</label>
-                    <input type="text" id="p-imgs" placeholder="https://link1.com/img.jpg, https://link2.com/img2.jpg">
+                    <input type="text" id="p-imgs" placeholder="https://link1.com/img1.jpg, https://link2.com/img2.jpg">
                 </div>
             </div>
-            <button class="btn" onclick="addNewProductToJSON()">Add Product & Generate JSON</button>
+            <button class="btn" onclick="generateProductFiles()">Generate Product & List Code</button>
 
             <div class="json-box">
-                <label style="color: var(--accent); font-size: 12px; margin-bottom: 5px; display: block;">📋 Copy this code and update 'products.json' on GitHub:</label>
-                <textarea id="json-output" readonly></textarea>
+                <label style="color: var(--accent); font-size: 12px; margin-bottom: 5px; display: block;">1️⃣ Content for the new file (Create a new file on GitHub with your product filename):</label>
+                <textarea id="json-product-output" readonly></textarea>
+                
+                <label style="color: var(--accent); font-size: 12px; margin-bottom: 5px; display: block; margin-top: 15px;">2️⃣ Updated content for 'products-list.json' (Paste this in your list file):</label>
+                <textarea id="json-list-output" readonly></textarea>
             </div>
         </div>
 
@@ -167,6 +173,7 @@
     <script>
         let currentLang = localStorage.getItem('onekeeper_lang') || 'en';
         let allProducts = [];
+        let productFilesList = [];
         const urlParams = new URLSearchParams(window.location.search);
         const isAdmin = urlParams.get('admin') === 'farouk';
 
@@ -177,11 +184,9 @@
                 heroDesc: "Professional goalkeeper gloves engineered with ultimate grip, precision comfort, and advanced German latex technology.",
                 heroBtn: "SHOP COLLECTION",
                 secTitle: "FEATURED PRODUCTS",
-                adminTitle: "⚙️ Admin Control Panel (JSON Generator)",
+                adminTitle: "⚙️ Admin Control Panel (Multi-File Generator)",
                 waBtn: "💬 Order via WhatsApp",
-                onlineBtn: "💳 Online Payment (InstaPay / Visa)",
-                delBtn: "Delete Product",
-                deleteConfirm: "Are you sure you want to delete this product?"
+                onlineBtn: "💳 Online Payment (InstaPay / Visa)"
             },
             ar: {
                 langBtn: "English 🇬🇧",
@@ -189,19 +194,32 @@
                 heroDesc: "قفازات حراس مرمى احترافية مصممة بأعلى مستوى ثبات، راحة فائقة، وبتكنولوجيا اللاتكس الألمانية المتقدمة.",
                 heroBtn: "تسوق المجموعة",
                 secTitle: "المنتجات المميزة",
-                adminTitle: "⚙️ لوحة تحكم المدير (مولد ملف JSON)",
+                adminTitle: "⚙️ لوحة تحكم المدير (النظام المتعدد)",
                 waBtn: "💬 اطلب عبر الواتساب",
-                onlineBtn: "💳 دفع أونلاين (إنستاباي / فيزا)",
-                delBtn: "حذف المنتج",
-                deleteConfirm: "هل أنت متأكد من حذف هذا المنتج؟"
+                onlineBtn: "💳 دفع أونلاين (إنستاباي / فيزا)"
             }
         };
 
         async function loadProducts() {
             try {
-                const response = await fetch('products.json?' + new Date().getTime());
-                allProducts = await response.json();
+                // بنقرا الأول قائمة الملفات
+                const listRes = await fetch('products-list.json?' + new Date().getTime());
+                productFilesList = await listRes.json();
+
+                allProducts = [];
+                // بنجيب كل منتج من ملفه الخاص بشكل مستقل
+                for (let file of productFilesList) {
+                    try {
+                        const prodRes = await fetch(file + '?' + new Date().getTime());
+                        const prodData = await prodRes.json();
+                        allProducts.push(prodData);
+                    } catch(err) {
+                        console.log('Error loading: ' + file);
+                    }
+                }
             } catch (e) {
+                // القيمة الافتراضية لو لسه الملفات مش موجودة
+                productFilesList = ["product1.json"];
                 allProducts = [
                     { 
                         name: "OneKeeper Aqua Hybrid", 
@@ -214,7 +232,7 @@
                 ];
             }
             renderProducts();
-            updateJsonOutput();
+            updateOutputs();
         }
 
         function toggleLanguage() {
@@ -278,7 +296,6 @@
 
                 let discountHtml = p.discount ? `<div class="discount-badge">${p.discount}</div>` : '';
                 let oldPriceHtml = p.oldPrice ? `<span class="product-old-price">${p.oldPrice}</span>` : '';
-                let adminDeleteBtn = isAdmin ? `<button class="btn-delete-prod" onclick="deleteProduct(${pIndex})">${t.delBtn}</button>` : '';
 
                 container.innerHTML += `
                     <div class="product-card" id="card-${pIndex}">
@@ -294,10 +311,8 @@
                                 <span class="product-price">${p.price}</span>
                                 ${oldPriceHtml}
                             </div>
-                            
                             <a href="${waLink}" target="_blank" class="btn btn-whatsapp">${t.waBtn}</a>
                             <a href="https://instapay.eg" target="_blank" class="btn btn-online">${t.onlineBtn}</a>
-                            ${adminDeleteBtn}
                         </div>
                     </div>
                 `;
@@ -323,7 +338,8 @@
             imgs[newIndex].classList.add('active');
         }
 
-        function addNewProductToJSON() {
+        function generateProductFiles() {
+            const filename = document.getElementById('p-filename').value.trim();
             const name = document.getElementById('p-name').value;
             const price = document.getElementById('p-price').value;
             const oldPrice = document.getElementById('p-old-price').value;
@@ -331,29 +347,30 @@
             const cat = document.getElementById('p-cat').value;
             const imgsInput = document.getElementById('p-imgs').value;
 
-            if(!name || !price) {
-                alert('Please enter product name and current price!');
+            if(!filename || !name || !price) {
+                alert('Please enter filename (e.g. product2.json), product name, and price!');
                 return;
             }
 
             const imgs = imgsInput ? imgsInput.split(',').map(s => s.trim()) : ['https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80'];
 
-            allProducts.push({ name, price, oldPrice, discount, cat, imgs });
-            renderProducts();
-            updateJsonOutput();
-            alert('Product added! Copy the JSON code below and update your products.json file on GitHub.');
-        }
+            const productObject = { name, price, oldPrice, discount, cat, imgs };
+            
+            // بيانات المنتج الجديد
+            document.getElementById('json-product-output').value = JSON.stringify(productObject, null, 2);
 
-        function deleteProduct(index) {
-            if(confirm(translations[currentLang].deleteConfirm)) {
-                allProducts.splice(index, 1);
-                renderProducts();
-                updateJsonOutput();
+            // تحديث قائمة الملفات
+            if (!productFilesList.includes(filename)) {
+                productFilesList.push(filename);
             }
+            document.getElementById('json-list-output').value = JSON.stringify(productFilesList, null, 2);
+
+            alert('Generated successfully! Follow the instructions below the boxes to create the files on GitHub.');
         }
 
-        function updateJsonOutput() {
-            document.getElementById('json-output').value = JSON.stringify(allProducts, null, 2);
+        function updateOutputs() {
+            document.getElementById('json-filename').value = "product" + (productFilesList.length + 1) + ".json";
+            document.getElementById('json-list-output').value = JSON.stringify(productFilesList, null, 2);
         }
 
         if (isAdmin) {
