@@ -80,21 +80,6 @@
         html[dir="rtl"] .product-price-box { flex-direction: row-reverse; justify-content: flex-end; }
         .product-price { font-size: 16px; font-weight: 900; color: var(--accent); }
         .product-old-price { font-size: 13px; color: var(--text-muted); text-decoration: line-through; }
-
-        /* Admin Panel */
-        #admin-panel { display: none; background: #121212; border: 2px dashed var(--accent); padding: 35px; margin-bottom: 50px; border-radius: 12px; text-align: left; }
-        html[dir="rtl"] #admin-panel { text-align: right; }
-        #admin-panel h2 { margin-bottom: 25px; color: var(--accent); font-size: 20px; font-weight: 800; }
-        
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; margin-bottom: 8px; color: #bbb; font-weight: 600; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; background: #1c1c1c; border: 1px solid var(--border-color); color: #fff; border-radius: 6px; font-size: 14px; outline: none; }
-        .form-group input[type="file"] { padding: 9px; cursor: pointer; color: var(--accent); }
-        
-        .btn-delete-prod { width: 100%; padding: 8px; font-size: 11px; background: rgba(255,51,51,0.1); color: #ff4444; border: 1px solid rgba(255,51,51,0.2); border-radius: 6px; margin-top: 8px; cursor: pointer; font-weight: 700; }
-        .json-box { margin-top: 20px; background: #0a0a0a; padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); }
-        .json-box textarea { width: 100%; height: 100px; background: #111; color: var(--accent); border: none; padding: 10px; font-family: monospace; font-size: 12px; resize: none; }
     </style>
 </head>
 <body>
@@ -120,47 +105,6 @@
     </section>
 
     <div class="container" id="shop">
-        
-        <div id="admin-panel">
-            <h2 id="admin-title">⚙️ Admin Control Panel (Local Images Generator)</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Product Name</label>
-                    <input type="text" id="p-name" placeholder="e.g. OneKeeper Hybrid Pro">
-                </div>
-                <div class="form-group">
-                    <label>Base Price (Before Discount)</label>
-                    <input type="text" id="p-old-price" placeholder="e.g. EGP 4,200">
-                </div>
-                <div class="form-group">
-                    <label>Current Price</label>
-                    <input type="text" id="p-price" placeholder="e.g. EGP 3,500">
-                </div>
-                <div class="form-group">
-                    <label>Discount Tag</label>
-                    <input type="text" id="p-discount" placeholder="e.g. 15% OFF">
-                </div>
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="p-cat">
-                        <option value="GLOVES">Gloves</option>
-                        <option value="EQUIPMENT">Equipment</option>
-                        <option value="CLOTHING">Clothing</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Select Multiple Images From Your Device</label>
-                    <input type="file" id="p-files" accept="image/*" multiple>
-                </div>
-            </div>
-            <button class="btn" onclick="addNewProductToJSON()">Add Product & Generate JSON</button>
-
-            <div class="json-box">
-                <label style="color: var(--accent); font-size: 12px; margin-bottom: 5px; display: block;" id="copy-label">📋 Copy this code and update 'products.json' on GitHub:</label>
-                <textarea id="json-output" readonly></textarea>
-            </div>
-        </div>
-
         <div class="section-title" id="sec-title">FEATURED PRODUCTS</div>
         <div class="products-grid" id="products-container"></div>
     </div>
@@ -168,9 +112,6 @@
     <script>
         let currentLang = localStorage.getItem('onekeeper_lang') || 'en';
         let allProducts = [];
-        let uploadedImagesBase64 = [];
-        const urlParams = new URLSearchParams(window.location.search);
-        const isAdmin = urlParams.get('admin') === 'farouk';
 
         const translations = {
             en: {
@@ -179,12 +120,8 @@
                 heroDesc: "Professional goalkeeper gloves engineered with ultimate grip, precision comfort, and advanced German latex technology.",
                 heroBtn: "SHOP COLLECTION",
                 secTitle: "FEATURED PRODUCTS",
-                adminTitle: "⚙️ Admin Control Panel (Local Images Generator)",
                 waBtn: "💬 Order via WhatsApp",
-                onlineBtn: "💳 Online Payment (InstaPay / Visa)",
-                delBtn: "Delete Product",
-                deleteConfirm: "Are you sure you want to delete this product?",
-                copyLabel: "📋 Copy this code and update 'products.json' on GitHub:"
+                onlineBtn: "💳 Online Payment (InstaPay / Visa)"
             },
             ar: {
                 langBtn: "English 🇬🇧",
@@ -192,59 +129,38 @@
                 heroDesc: "قفازات حراس مرمى احترافية مصممة بأعلى مستوى ثبات، راحة فائقة، وبتكنولوجيا اللاتكس الألمانية المتقدمة.",
                 heroBtn: "تسوق المجموعة",
                 secTitle: "المنتجات المميزة",
-                adminTitle: "⚙️ لوحة تحكم المدير (رفع الصور من الجهاز)",
                 waBtn: "💬 اطلب عبر الواتساب",
-                onlineBtn: "💳 دفع أونلاين (إنستاباي / فيزا)",
-                delBtn: "حذف المنتج",
-                deleteConfirm: "هل أنت متأكد من حذف هذا المنتج؟",
-                copyLabel: "📋 انخخ هذا الكود وقم بتحديث ملف 'products.json' على جيت هب:"
+                onlineBtn: "💳 دفع أونلاين (إنستاباي / فيزا)"
             }
         };
 
-        // معالجة اختيار الصور من الجهاز وتحويلها لكود مصغر
-        document.getElementById('p-files').addEventListener('change', function(e) {
-            const files = e.target.files;
-            uploadedImagesBase64 = [];
-            if (files.length === 0) return;
-
-            let processedCount = 0;
-            for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    // تصغير مقاس الصورة تلقائياً لضمان خفة حجم ملف الجايسون
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        let width = img.width;
-                        let height = img.height;
-                        const max_size = 600;
-                        if (width > height) {
-                            if (width > max_size) { height *= max_size / width; width = max_size; }
-                        } else {
-                            if (height > max_size) { width *= max_size / height; height = max_size; }
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        uploadedImagesBase64.push(canvas.toDataURL('image/jpeg', 0.8));
-                        processedCount++;
-                        if(processedCount === files.length) {
-                            alert('تم تجهيز الصور بنجاح! املأ باقي بيانات المنتج واضغط إضافة.');
-                        }
-                    }
-                    img.src = event.target.result;
-                }
-                reader.readAsDataURL(files[i]);
-            }
-        });
-
-        async function loadProducts() {
+        async function loadProductsFromList() {
             try {
-                const response = await fetch('products.json?' + new Date().getTime());
-                allProducts = await response.json();
+                // جلب ملف القائمة products-list.json
+                const listRes = await fetch('products-list.json?' + new Date().getTime());
+                const productFiles = await listRes.json();
+                
+                allProducts = [];
+                
+                // الدخول على كل ملف منتج ومطالعة بياناته وصوره
+                for (let file of productFiles) {
+                    try {
+                        const prodRes = await fetch(file + '?' + new Date().getTime());
+                        const prodData = await prodRes.json();
+                        // الـ prodData ممكن يكون منتج واحد أو مصفوفة منتجات داخل الملف
+                        if (Array.isArray(prodData)) {
+                            allProducts.push(...prodData);
+                        } else {
+                            allProducts.push(prodData);
+                        }
+                    } catch (err) {
+                        console.log('Error loading file: ' + file);
+                    }
+                }
+                
+                renderProducts();
             } catch (e) {
+                console.log('Could not load products-list.json, using fallback');
                 allProducts = [
                     { 
                         name: "OneKeeper Aqua Hybrid", 
@@ -255,9 +171,8 @@
                         imgs: ["https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80"] 
                     }
                 ];
+                renderProducts();
             }
-            renderProducts();
-            updateJsonOutput();
         }
 
         function toggleLanguage() {
@@ -284,11 +199,6 @@
             document.getElementById('hero-desc').innerText = t.heroDesc;
             document.getElementById('hero-btn').innerText = t.heroBtn;
             document.getElementById('sec-title').innerText = t.secTitle;
-            document.getElementById('copy-label').innerText = t.copyLabel;
-            
-            if(isAdmin) {
-                document.getElementById('admin-title').innerText = t.adminTitle;
-            }
 
             document.querySelectorAll('.nav-links a').forEach(a => {
                 a.innerText = a.getAttribute(`data-${currentLang}`);
@@ -322,7 +232,6 @@
 
                 let discountHtml = p.discount ? `<div class="discount-badge">${p.discount}</div>` : '';
                 let oldPriceHtml = p.oldPrice ? `<span class="product-old-price">${p.oldPrice}</span>` : '';
-                let adminDeleteBtn = isAdmin ? `<button class="btn-delete-prod" onclick="deleteProduct(${pIndex})">${t.delBtn}</button>` : '';
 
                 container.innerHTML += `
                     <div class="product-card" id="card-${pIndex}">
@@ -340,7 +249,6 @@
                             </div>
                             <a href="${waLink}" target="_blank" class="btn btn-whatsapp">${t.waBtn}</a>
                             <a href="https://instapay.eg" target="_blank" class="btn btn-online">${t.onlineBtn}</a>
-                            ${adminDeleteBtn}
                         </div>
                     </div>
                 `;
@@ -366,48 +274,8 @@
             imgs[newIndex].classList.add('active');
         }
 
-        function addNewProductToJSON() {
-            const name = document.getElementById('p-name').value;
-            const price = document.getElementById('p-price').value;
-            const oldPrice = document.getElementById('p-old-price').value;
-            const discount = document.getElementById('p-discount').value;
-            const cat = document.getElementById('p-cat').value;
-
-            if(!name || !price) {
-                alert('Please enter product name and current price!');
-                return;
-            }
-
-            const imgs = uploadedImagesBase64.length > 0 ? uploadedImagesBase64 : ['https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80'];
-
-            allProducts.push({ name, price, oldPrice, discount, cat, imgs });
-            renderProducts();
-            updateJsonOutput();
-            alert('Product added successfully! Copy the JSON code below and update your products.json file on GitHub.');
-            
-            // إعادة ضبط حقل الصور
-            uploadedImagesBase64 = [];
-            document.getElementById('p-files').value = '';
-        }
-
-        function deleteProduct(index) {
-            if(confirm(translations[currentLang].deleteConfirm)) {
-                allProducts.splice(index, 1);
-                renderProducts();
-                updateJsonOutput();
-            }
-        }
-
-        function updateJsonOutput() {
-            document.getElementById('json-output').value = JSON.stringify(allProducts, null, 2);
-        }
-
-        if (isAdmin) {
-            document.getElementById('admin-panel').style.display = 'block';
-        }
-
         applyLanguage();
-        loadProducts();
+        loadProductsList();
     </script>
 </body>
 </html>
