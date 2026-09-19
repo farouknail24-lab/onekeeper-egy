@@ -90,6 +90,7 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; margin-bottom: 8px; color: #bbb; font-weight: 600; }
         .form-group input, .form-group select { width: 100%; padding: 12px; background: #1c1c1c; border: 1px solid var(--border-color); color: #fff; border-radius: 6px; font-size: 14px; outline: none; }
+        .form-group input[type="file"] { padding: 9px; cursor: pointer; color: var(--accent); }
         
         .btn-delete-prod { width: 100%; padding: 8px; font-size: 11px; background: rgba(255,51,51,0.1); color: #ff4444; border: 1px solid rgba(255,51,51,0.2); border-radius: 6px; margin-top: 8px; cursor: pointer; font-weight: 700; }
         .json-box { margin-top: 20px; background: #0a0a0a; padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); }
@@ -121,7 +122,7 @@
     <div class="container" id="shop">
         
         <div id="admin-panel">
-            <h2 id="admin-title">⚙️ Admin Control Panel (JSON Generator)</h2>
+            <h2 id="admin-title">⚙️ Admin Control Panel (Local Images Generator)</h2>
             <div class="form-grid">
                 <div class="form-group">
                     <label>Product Name</label>
@@ -148,14 +149,14 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Image Links (Comma Separated URLs)</label>
-                    <input type="text" id="p-imgs" placeholder="https://link1.com/img1.jpg, https://link2.com/img2.jpg">
+                    <label>Select Multiple Images From Your Device</label>
+                    <input type="file" id="p-files" accept="image/*" multiple>
                 </div>
             </div>
             <button class="btn" onclick="addNewProductToJSON()">Add Product & Generate JSON</button>
 
             <div class="json-box">
-                <label style="color: var(--accent); font-size: 12px; margin-bottom: 5px; display: block;">📋 Copy this code and update 'products.json' on GitHub:</label>
+                <label style="color: var(--accent); font-size: 12px; margin-bottom: 5px; display: block;" id="copy-label">📋 Copy this code and update 'products.json' on GitHub:</label>
                 <textarea id="json-output" readonly></textarea>
             </div>
         </div>
@@ -167,6 +168,7 @@
     <script>
         let currentLang = localStorage.getItem('onekeeper_lang') || 'en';
         let allProducts = [];
+        let uploadedImagesBase64 = [];
         const urlParams = new URLSearchParams(window.location.search);
         const isAdmin = urlParams.get('admin') === 'farouk';
 
@@ -177,11 +179,12 @@
                 heroDesc: "Professional goalkeeper gloves engineered with ultimate grip, precision comfort, and advanced German latex technology.",
                 heroBtn: "SHOP COLLECTION",
                 secTitle: "FEATURED PRODUCTS",
-                adminTitle: "⚙️ Admin Control Panel (JSON Generator)",
+                adminTitle: "⚙️ Admin Control Panel (Local Images Generator)",
                 waBtn: "💬 Order via WhatsApp",
                 onlineBtn: "💳 Online Payment (InstaPay / Visa)",
                 delBtn: "Delete Product",
-                deleteConfirm: "Are you sure you want to delete this product?"
+                deleteConfirm: "Are you sure you want to delete this product?",
+                copyLabel: "📋 Copy this code and update 'products.json' on GitHub:"
             },
             ar: {
                 langBtn: "English 🇬🇧",
@@ -189,13 +192,53 @@
                 heroDesc: "قفازات حراس مرمى احترافية مصممة بأعلى مستوى ثبات، راحة فائقة، وبتكنولوجيا اللاتكس الألمانية المتقدمة.",
                 heroBtn: "تسوق المجموعة",
                 secTitle: "المنتجات المميزة",
-                adminTitle: "⚙️ لوحة تحكم المدير (مولد ملف JSON)",
+                adminTitle: "⚙️ لوحة تحكم المدير (رفع الصور من الجهاز)",
                 waBtn: "💬 اطلب عبر الواتساب",
                 onlineBtn: "💳 دفع أونلاين (إنستاباي / فيزا)",
                 delBtn: "حذف المنتج",
-                deleteConfirm: "هل أنت متأكد من حذف هذا المنتج؟"
+                deleteConfirm: "هل أنت متأكد من حذف هذا المنتج؟",
+                copyLabel: "📋 انخخ هذا الكود وقم بتحديث ملف 'products.json' على جيت هب:"
             }
         };
+
+        // معالجة اختيار الصور من الجهاز وتحويلها لكود مصغر
+        document.getElementById('p-files').addEventListener('change', function(e) {
+            const files = e.target.files;
+            uploadedImagesBase64 = [];
+            if (files.length === 0) return;
+
+            let processedCount = 0;
+            for (let i = 0; i < files.length; i++) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // تصغير مقاس الصورة تلقائياً لضمان خفة حجم ملف الجايسون
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        let width = img.width;
+                        let height = img.height;
+                        const max_size = 600;
+                        if (width > height) {
+                            if (width > max_size) { height *= max_size / width; width = max_size; }
+                        } else {
+                            if (height > max_size) { width *= max_size / height; height = max_size; }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        uploadedImagesBase64.push(canvas.toDataURL('image/jpeg', 0.8));
+                        processedCount++;
+                        if(processedCount === files.length) {
+                            alert('تم تجهيز الصور بنجاح! املأ باقي بيانات المنتج واضغط إضافة.');
+                        }
+                    }
+                    img.src = event.target.result;
+                }
+                reader.readAsDataURL(files[i]);
+            }
+        });
 
         async function loadProducts() {
             try {
@@ -241,6 +284,7 @@
             document.getElementById('hero-desc').innerText = t.heroDesc;
             document.getElementById('hero-btn').innerText = t.heroBtn;
             document.getElementById('sec-title').innerText = t.secTitle;
+            document.getElementById('copy-label').innerText = t.copyLabel;
             
             if(isAdmin) {
                 document.getElementById('admin-title').innerText = t.adminTitle;
@@ -265,7 +309,7 @@
                 
                 if (p.imgs && p.imgs.length > 0) {
                     p.imgs.forEach((imgUrl, i) => {
-                        imagesHtml += `<div class="product-img ${i === 0 ? 'active' : ''}" style="background-image: url('${imgUrl.trim()}')"></div>`;
+                        imagesHtml += `<div class="product-img ${i === 0 ? 'active' : ''}" style="background-image: url('${imgUrl}')"></div>`;
                     });
                     
                     if (p.imgs.length > 1) {
@@ -328,19 +372,22 @@
             const oldPrice = document.getElementById('p-old-price').value;
             const discount = document.getElementById('p-discount').value;
             const cat = document.getElementById('p-cat').value;
-            const imgsInput = document.getElementById('p-imgs').value;
 
             if(!name || !price) {
                 alert('Please enter product name and current price!');
                 return;
             }
 
-            const imgs = imgsInput ? imgsInput.split(',').map(s => s.trim()) : ['https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80'];
+            const imgs = uploadedImagesBase64.length > 0 ? uploadedImagesBase64 : ['https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80'];
 
             allProducts.push({ name, price, oldPrice, discount, cat, imgs });
             renderProducts();
             updateJsonOutput();
-            alert('Product added! Copy the JSON code below and update your products.json file on GitHub.');
+            alert('Product added successfully! Copy the JSON code below and update your products.json file on GitHub.');
+            
+            // إعادة ضبط حقل الصور
+            uploadedImagesBase64 = [];
+            document.getElementById('p-files').value = '';
         }
 
         function deleteProduct(index) {
