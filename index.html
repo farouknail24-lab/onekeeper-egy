@@ -3,808 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ONEKEEPER | Professional Goalkeeper Store</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>OneKeeper Egypt | Official Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0b0b0b;
-            --card-bg: #161616;
-            --accent-color: #00ff87;
-            --accent-hover: #00cc6a;
-            --text-color: #ffffff;
-            --text-muted: #999999;
-            --border-color: #262626;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-        }
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        body { background-color: #0f0f0f; color: #ffffff; }
+        header { background: #000; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000; }
+        .top-bar { background: #00ff66; color: #000; text-align: center; font-size: 13px; font-weight: 700; padding: 6px; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .logo { font-size: 24px; font-weight: 900; color: #fff; letter-spacing: 1px; }
+        .logo span { color: #00ff66; }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { color: #ccc; text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.3s; }
+        .nav-links a:hover { color: #00ff66; }
+        .cart-icon { color: #fff; font-weight: 700; background: #222; padding: 8px 15px; border-radius: 20px; font-size: 14px; }
         
-        /* Top Bar */
-        .top-bar {
-            background-color: #000;
-            font-size: 11px;
-            text-align: center;
-            padding: 10px;
-            color: var(--accent-color);
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border-color);
-        }
+        .hero { height: 75vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1920&q=80') center/cover; padding: 0 20px; }
+        .hero h1 { font-size: 48px; font-weight: 900; margin-bottom: 15px; letter-spacing: 2px; }
+        .hero p { font-size: 16px; color: #aaa; max-width: 600px; margin-bottom: 30px; }
+        .btn { background: #00ff66; color: #000; padding: 12px 30px; font-weight: 700; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #00cc52; }
 
-        /* Header */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 50px;
-            border-bottom: 1px solid var(--border-color);
-            background: rgba(11,11,11,0.95);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            color: var(--text-color);
-            text-decoration: none;
-        }
-        .logo span {
-            color: var(--accent-color);
-        }
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 35px;
-        }
-        nav ul li a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-            transition: color 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        nav ul li a:hover {
-            color: var(--accent-color);
-        }
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .admin-btn {
-            background: transparent;
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 12px;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .admin-btn:hover {
-            background: var(--accent-color);
-            color: #000;
-        }
-        .cart-icon {
-            cursor: pointer;
-            position: relative;
-            font-size: 20px;
-            padding: 5px;
-        }
-        .cart-count {
-            position: absolute;
-            top: -2px;
-            right: -6px;
-            background: var(--accent-color);
-            color: #000;
-            font-size: 10px;
-            font-weight: 900;
-            padding: 2px 6px;
-            border-radius: 50%;
-        }
+        .container { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
+        .section-title { font-size: 28px; font-weight: 800; margin-bottom: 30px; border-left: 4px solid #00ff66; padding-left: 15px; }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .product-card { background: #181818; border-radius: 8px; overflow: hidden; border: 1px solid #222; transition: 0.3s; }
+        .product-card:hover { border-color: #00ff66; transform: translateY(-5px); }
+        .product-img { height: 250px; background: #222; background-size: cover; background-position: center; }
+        .product-info { padding: 20px; }
+        .product-cat { font-size: 12px; color: #00ff66; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
+        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+        .product-price { font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 15px; }
 
-        /* Hero */
-        .hero {
-            height: 75vh;
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0 20px;
-        }
-        .hero h1 {
-            font-size: 52px;
-            font-weight: 900;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .hero p {
-            font-size: 16px;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin-bottom: 30px;
-        }
-        .btn {
-            background-color: var(--accent-color);
-            color: #000;
-            padding: 14px 32px;
-            font-weight: 800;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: transform 0.2s, background 0.3s;
-            text-decoration: none;
-            font-size: 14px;
-            display: inline-block;
-            text-align: center;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            background-color: var(--accent-hover);
-        }
-
-        /* Container & Grid */
-        .container {
-            max-width: 1200px;
-            margin: 60px auto;
-            padding: 0 20px;
-        }
-        .section-title {
-            font-size: 26px;
-            font-weight: 800;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            border-left: 4px solid var(--accent-color);
-            padding-left: 15px;
-            letter-spacing: 1px;
-        }
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        .product-card {
-            background-color: var(--card-bg);
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            transition: transform 0.3s, border-color 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-color);
-        }
-        .product-img-container {
-            position: relative;
-            width: 100%;
-            height: 260px;
-            background-color: #1a1a1a;
-            overflow: hidden;
-        }
-        .product-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .card-thumbnails {
-            display: flex;
-            gap: 5px;
-            padding: 8px 15px 0 15px;
-            background: #161616;
-        }
-        .thumb-img {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 3px;
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            opacity: 0.6;
-            transition: 0.2s;
-        }
-        .thumb-img:hover, .thumb-img.active {
-            opacity: 1;
-            border-color: var(--accent-color);
-        }
-
-        .product-info {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-        .product-title {
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .product-desc {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            flex-grow: 1;
-        }
-        .product-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-        }
-        .product-price {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--accent-color);
-        }
-        .add-to-cart {
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 8px 16px;
-            font-weight: 700;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-        .add-to-cart:hover {
-            background: var(--accent-color);
-        }
-
-        /* Modals & Drawers */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .modal-content {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 8px;
-            width: 550px;
-            max-width: 100%;
-            border: 1px solid var(--border-color);
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-        .close-modal {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 22px;
-            cursor: pointer;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            margin-bottom: 6px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 11px;
-            background: #0f0f0f;
-            border: 1px solid var(--border-color);
-            color: #fff;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .form-group input[type="file"] {
-            padding: 8px;
-            cursor: pointer;
-        }
-        .form-group input:focus, .form-group textarea:focus {
-            border-color: var(--accent-color);
-            outline: none;
-        }
-        .admin-product-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #111;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-        }
-        .delete-btn {
-            background: #ff4444;
-            color: #fff;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        /* Cart Drawer */
-        .cart-drawer {
-            position: fixed;
-            top: 0;
-            right: -420px;
-            width: 400px;
-            height: 100%;
-            background: var(--card-bg);
-            box-shadow: -5px 0 25px rgba(0,0,0,0.7);
-            z-index: 3000;
-            transition: right 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            padding: 25px;
-            border-left: 1px solid var(--border-color);
-        }
-        .cart-drawer.open {
-            right: 0;
-        }
-        .cart-items {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 15px 0;
-        }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
-        }
-        .cart-total {
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        .checkout-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .payment-methods {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .payment-option {
-            background: #0f0f0f;
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            text-align: center;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        .payment-option.active {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-        }
+        /* Admin Panel Styles */
+        #admin-panel { display: none; background: #141414; border: 2px dashed #00ff66; padding: 30px; margin-bottom: 40px; border-radius: 8px; }
+        #admin-panel h2 { margin-bottom: 20px; color: #00ff66; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 14px; margin-bottom: 5px; color: #aaa; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; background: #222; border: 1px solid #333; color: #fff; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        Free Global Shipping on Orders Over EGP 3,000 | Official OneKeeper Store
-    </div>
+    <div class="top-bar">FREE GLOBAL SHIPPING ON ORDERS OVER EGP 3,000 | OFFICIAL ONEKEEPER STORE</div>
 
     <header>
-        <a href="#" class="logo">ONE<span>KEEPER</span></a>
-        <nav>
-            <ul>
-                <li><a href="#products">Gloves</a></li>
-                <li><a href="#products">Equipment</a></li>
-                <li><a href="#products">Clothing</a></li>
+        <div class="nav-container">
+            <div class="logo">ONE<span>KEEPER</span></div>
+            <ul class="nav-links">
+                <li><a href="#">GLOVES</a></li>
+                <li><a href="#">EQUIPMENT</a></li>
+                <li><a href="#">CLOTHING</a></li>
             </ul>
-        </nav>
-        <div class="header-actions">
-            <!-- Hidden admin button from regular customers unless secret URL key is added -->
-            <button class="admin-btn" id="adminHeaderBtn" style="display: none;" onclick="openAdminModal()"><i class="fa-solid fa-sliders"></i> Control Panel</button>
-            <div class="cart-icon" onclick="toggleCart()">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span class="cart-count" id="cartCount">0</span>
-            </div>
+            <div class="cart-icon">🛒 <span id="cart-count">0</span></div>
         </div>
     </header>
 
     <section class="hero">
-        <h1>Master Your Goal</h1>
+        <h1>MASTER YOUR GOAL</h1>
         <p>Professional goalkeeper gloves designed with ultimate grip, comfort, and advanced German latex technology.</p>
-        <a href="#products" class="btn">Shop Collection</a>
+        <a href="#shop" class="btn">SHOP COLLECTION</a>
     </section>
 
-    <div class="container" id="products">
-        <h2 class="section-title">Pro Collection</h2>
-        <div class="products-grid" id="productsGrid"></div>
-    </div>
+    <div class="container" id="shop">
+        
+        <!-- لوحة التحكم السرية (تظهر فقط عند كتابة الرابط بـ ?admin=farouk) -->
+        <div id="admin-panel">
+            <h2>⚙️ لوحة تحكم المدير (إضافة منتج جديد)</h2>
+            <div class="form-group">
+                <label>اسم المنتج</label>
+                <input type="text" id="p-name" placeholder="مثال: OneKeeper Hybrid Pro">
+            </div>
+            <div class="form-group">
+                <label>السعر (بالجنيه)</label>
+                <input type="text" id="p-price" placeholder="مثال: EGP 3,500">
+            </div>
+            <div class="form-group">
+                <label>القسم</label>
+                <select id="p-cat">
+                    <option value="GLOVES">Gloves</option>
+                    <option value="EQUIPMENT">Equipment</option>
+                    <option value="CLOTHING">Clothing</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>رابط صورة المنتج</label>
+                <input type="text" id="p-img" placeholder="ضع رابط الصورة هنا">
+            </div>
+            <button class="btn" onclick="addNewProduct()">إضافة المنتج للموقع</button>
+        </div>
 
-    <!-- Admin Panel Modal -->
-    <div class="modal" id="adminModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Store Control Panel (Private)</h3>
-                <button class="close-modal" onclick="closeAdminModal()">&times;</button>
-            </div>
-            <h4 style="margin-bottom: 12px; color: var(--accent-color); font-size: 14px; text-transform: uppercase;">Add New Product</h4>
-            <div class="form-group">
-                <label>Product Name</label>
-                <input type="text" id="newTitle" placeholder="e.g. OneKeeper Fusion Hybrid">
-            </div>
-            <div class="form-group">
-                <label>Price (EGP)</label>
-                <input type="number" id="newPrice" placeholder="4900">
-            </div>
-            <div class="form-group">
-                <label>Upload Product Images (Select multiple from device)</label>
-                <input type="file" id="newImagesFile" accept="image/*" multiple>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="newDesc" rows="2" placeholder="Professional latex grip..."></textarea>
-            </div>
-            <button class="btn" style="width: 100%; margin-bottom: 25px;" onclick="addNewProduct()">Add Product</button>
-            
-            <h4 style="margin-bottom: 12px; color: var(--accent-color); font-size: 14px; text-transform: uppercase;">Manage Existing Products</h4>
-            <div id="adminProductList"></div>
+        <div class="section-title">FEATURED PRODUCTS</div>
+        <div class="products-grid" id="products-container">
+            <!-- المنتجات هتظهر هنا تلقائياً -->
         </div>
-    </div>
-
-    <!-- Checkout Modal (WhatsApp Order Integration) -->
-    <div class="modal" id="checkoutModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Complete Your Order</h3>
-                <button class="close-modal" onclick="closeCheckoutModal()">&times;</button>
-            </div>
-            <div class="checkout-steps">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="custName" placeholder="Farouk Nail">
-                </div>
-                <div class="form-group">
-                    <label>Shipping Address (City / District)</label>
-                    <input type="text" id="custAddress" placeholder="Sheikh Zayed, Giza">
-                </div>
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="text" id="custPhone" placeholder="010xxxxxxxx">
-                </div>
-                <label style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; display: block;">Payment Method</label>
-                <div class="payment-methods">
-                    <div class="payment-option active" id="payCod" onclick="selectPayment('cod')"><i class="fa-solid fa-truck"></i> Cash on Delivery</div>
-                    <div class="payment-option" id="payVodafone" onclick="selectPayment('vodafone')"><i class="fa-solid fa-mobile-screen"></i> Vodafone Cash</div>
-                </div>
-                <button class="btn" style="width: 100%; margin-top: 10px; background: #25d366; color: #fff;" onclick="sendWhatsAppOrder()"><i class="fa-brands fa-whatsapp"></i> Send Order via WhatsApp</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cart Drawer -->
-    <div class="cart-drawer" id="cartDrawer">
-        <div class="modal-header">
-            <h3>Shopping Cart</h3>
-            <button class="close-modal" onclick="toggleCart()">&times;</button>
-        </div>
-        <div class="cart-items" id="cartItems">
-            <p style="color: var(--text-muted); text-align: center; margin-top: 50px;">Your cart is empty</p>
-        </div>
-        <div class="cart-total">
-            <span>Total:</span>
-            <span id="cartTotal" style="color: var(--accent-color);">0 EGP</span>
-        </div>
-        <button class="btn" id="checkoutBtn" style="width: 100%; opacity: 0.5; pointer-events: none;" onclick="openCheckoutModal()">Proceed to Checkout</button>
     </div>
 
     <script>
-        // Check if user entered via the secret admin URL parameter (e.g. index.html?admin=farouk)
-        const urlParams = new URLSearchParams(window.location.search);
-        if(urlParams.get('admin') === 'farouk') {
-            document.getElementById('adminHeaderBtn').style.display = 'flex';
-        }
-
-        let products = [
-            {
-                id: 1,
-                title: "OneKeeper Fusion Arc",
-                price: 4900,
-                images: [
-                    "https://images.unsplash.com/photo-1624880357913-a85371ab6ff6?auto=format&fit=crop&w=600&q=80",
-                    "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=600&q=80"
-                ],
-                desc: "Ultimate grip and comfortable hybrid cut with 4mm professional contact latex."
-            },
-            {
-                id: 2,
-                title: "OneKeeper C-Tec Negative",
-                price: 4250,
-                images: [
-                    "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=600&q=80",
-                    "https://images.unsplash.com/photo-1624880357913-a85371ab6ff6?auto=format&fit=crop&w=600&q=80"
-                ],
-                desc: "Tight negative cut designed for maximum ball contact feel and flexibility."
-            }
+        // المنتجات الافتراضية الأولية
+        const defaultProducts = [
+            { name: "OneKeeper Aqua Hybrid", price: "EGP 3,850", cat: "GLOVES", img: "https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80" },
+            { name: "OneKeeper Negative Cut", price: "EGP 3,400", cat: "GLOVES", img: "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=600&q=80" },
+            { name: "Pro Training Bib", price: "EGP 650", cat: "EQUIPMENT", img: "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=600&q=80" }
         ];
 
-        let cart = [];
-        let selectedPaymentMethod = 'cod';
+        // جلب المنتجات من التخزين الداخلي أو استخدام الافتراضية
+        function getProducts() {
+            const saved = localStorage.getItem('onekeeper_products');
+            return saved ? JSON.parse(saved) : defaultProducts;
+        }
 
+        // عرض المنتجات في الصفحة
         function renderProducts() {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '';
-            products.forEach(product => {
-                let mainImg = product.images[0];
-                let thumbnailsHTML = '';
-                
-                if (product.images.length > 1) {
-                    thumbnailsHTML = `<div class="card-thumbnails">`;
-                    product.images.forEach((img, idx) => {
-                        let activeClass = idx === 0 ? 'active' : '';
-                        thumbnailsHTML += `<img src="${img}" class="thumb-img ${activeClass}" onclick="changeProductImage(this, ${product.id}, '${img}')">`;
-                    });
-                    thumbnailsHTML += `</div>`;
-                }
+            const container = document.getElementById('products-container');
+            const products = getProducts();
+            container.innerHTML = '';
 
-                grid.innerHTML += `
+            products.forEach((p, index) => {
+                container.innerHTML += `
                     <div class="product-card">
-                        <div class="product-img-container">
-                            <img src="${mainImg}" alt="${product.title}" class="product-img" id="product-main-img-${product.id}">
-                        </div>
-                        ${thumbnailsHTML}
+                        <div class="product-img" style="background-image: url('${p.img}')"></div>
                         <div class="product-info">
-                            <h3 class="product-title">${product.title}</h3>
-                            <p class="product-desc">${product.desc}</p>
-                            <div class="product-footer">
-                                <span class="product-price">${product.price.toLocaleString()} EGP</span>
-                                <button class="add-to-cart" onclick="addToCart(${product.id})">Add to Cart</button>
-                            </div>
+                            <div class="product-cat">${p.cat}</div>
+                            <div class="product-name">${p.name}</div>
+                            <div class="product-price">${p.price}</div>
+                            <button class="btn" style="padding: 8px 15px; font-size: 12px;" onclick="deleteProduct(${index})">حذف المنتج</button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function changeProductImage(thumbElement, productId, imgUrl) {
-            document.getElementById(`product-main-img-${productId}`).src = imgUrl;
-            let cardContainer = thumbElement.closest('.product-card');
-            cardContainer.querySelectorAll('.thumb-img').forEach(t => t.classList.remove('active'));
-            thumbElement.classList.add('active');
-        }
-
-        function renderAdminList() {
-            const list = document.getElementById('adminProductList');
-            list.innerHTML = '';
-            if(products.length === 0) {
-                list.innerHTML = '<p style="color:var(--text-muted); font-size:13px; text-align:center;">No products available.</p>';
-                return;
-            }
-            products.forEach(product => {
-                list.innerHTML += `
-                    <div class="admin-product-row">
-                        <div>
-                            <strong style="font-size:13px;">${product.title}</strong><br>
-                            <span style="color:var(--accent-color); font-size:12px;">${product.price.toLocaleString()} EGP</span>
-                        </div>
-                        <button class="delete-btn" onclick="deleteProduct(${product.id})"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-            });
-        }
-
-        function openAdminModal() {
-            document.getElementById('adminModal').style.display = 'flex';
-            renderAdminList();
-        }
-
-        function closeAdminModal() {
-            document.getElementById('adminModal').style.display = 'none';
-        }
-
+        // إضافة منتج جديد
         function addNewProduct() {
-            const title = document.getElementById('newTitle').value;
-            const price = parseFloat(document.getElementById('newPrice').value);
-            const desc = document.getElementById('newDesc').value;
-            const fileInput = document.getElementById('newImagesFile');
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const cat = document.getElementById('p-cat').value;
+            const img = document.getElementById('p-img').value;
 
-            if(!title || isNaN(price) || fileInput.files.length === 0) {
-                alert('Please fill in product name, price, and select at least one image!');
+            if(!name || !price) {
+                alert('من فضلك ادخل اسم المنتج والسعر!');
                 return;
             }
 
-            let imagesArray = [];
-            let filesLoaded = 0;
-
-            Array.from(fileInput.files).forEach((file) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imagesArray.push(e.target.result);
-                    filesLoaded++;
-                    if(filesLoaded === fileInput.files.length) {
-                        products.push({
-                            id: Date.now(),
-                            title,
-                            price,
-                            images: imagesArray,
-                            desc: desc || 'Professional goalkeeper equipment.'
-                        });
-                        renderProducts();
-                        renderAdminList();
-                        document.getElementById('newTitle').value = '';
-                        document.getElementById('newPrice').value = '';
-                        document.getElementById('newImagesFile').value = '';
-                        document.getElementById('newDesc').value = '';
-                        alert('Product added successfully!');
-                    }
-                };
-                reader.readAsDataURL(file);
+            const products = getProducts();
+            products.push({ 
+                name, 
+                price, 
+                cat, 
+                img: img || 'https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80' 
             });
-        }
 
-        function deleteProduct(id) {
-            products = products.filter(p => p.id !== id);
+            localStorage.setItem('onekeeper_products', JSON.stringify(products));
+            
+            // تفريغ الحقول وإعادة عرض المنتجات
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-price').value = '';
+            document.getElementById('p-img').value = '';
+            
             renderProducts();
-            renderAdminList();
+            alert('تم إضافة المنتج بنجاح!');
         }
 
-        function addToCart(id) {
-            const product = products.find(p => p.id === id);
-            cart.push({ ...product, displayImage: product.images[0] });
-            updateCart();
-            toggleCart(true);
-        }
-
-        function updateCart() {
-            document.getElementById('cartCount').innerText = cart.length;
-            const cartItems = document.getElementById('cartItems');
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            let total = 0;
-            
-            if(cart.length === 0) {
-                cartItems.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 50px;">Your cart is empty</p>';
-                checkoutBtn.style.opacity = '0.5';
-                checkoutBtn.style.pointerEvents = 'none';
-            } else {
-                cartItems.innerHTML = '';
-                checkoutBtn.style.opacity = '1';
-                checkoutBtn.style.pointerEvents = 'auto';
-                cart.forEach((item, index) => {
-                    total += item.price;
-                    cartItems.innerHTML += `
-                        <div class="cart-item">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <img src="${item.displayImage}" style="width:45px; height:45px; object-fit:cover; border-radius:4px;">
-                                <div>
-                                    <h4 style="font-size: 13px;">${item.title}</h4>
-                                    <span style="color: var(--accent-color); font-size: 12px;">${item.price.toLocaleString()} EGP</span>
-                                </div>
-                            </div>
-                            <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ff4444; cursor:pointer; font-size:16px;"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                    `;
-                });
-            }
-            document.getElementById('cartTotal').innerText = `${total.toLocaleString()} EGP`;
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCart();
-        }
-
-        function toggleCart(open) {
-            const drawer = document.getElementById('cartDrawer');
-            if(open) {
-                drawer.classList.add('open');
-            } else {
-                drawer.classList.toggle('open');
+        // حذف منتج (اختياري لو حابب تحذف منتج قديم)
+        function deleteProduct(index) {
+            if(confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+                const products = getProducts();
+                products.splice(index, 1);
+                localStorage.setItem('onekeeper_products', JSON.stringify(products));
+                renderProducts();
             }
         }
 
-        function openCheckoutModal() {
-            if(cart.length === 0) return;
-            toggleCart(false);
-            document.getElementById('checkoutModal').style.display = 'flex';
+        // التحقق من الرابط السري لإظهار لوحة التحكم
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('admin') === 'farouk') {
+            document.getElementById('admin-panel').style.display = 'block';
         }
 
-        function closeCheckoutModal() {
-            document.getElementById('checkoutModal').style.display = 'none';
-        }
-
-        function selectPayment(method) {
-            selectedPaymentMethod = method;
-            document.getElementById('payCod').classList.toggle('active', method === 'cod');
-            document.getElementById('payVodafone').classList.toggle('active', method === 'vodafone');
-        }
-
-        function sendWhatsAppOrder() {
-            const name = document.getElementById('custName').value;
-            const address = document.getElementById('custAddress').value;
-            const phone = document.getElementById('custPhone').value;
-
-            if(!name || !address || !phone) {
-                alert('Please fill in all details (Name, Address, Phone) to send the order.');
-                return;
-            }
-
-            let orderText = `🛒 *New Order - OneKeeper Store* 🛒\n\n`;
-            orderText += `👤 *Customer Name:* ${name}\n`;
-            orderText += `📍 *Address:* ${address}\n`;
-            orderText += `📞 *Phone:* ${phone}\n`;
-            orderText += `💳 *Payment:* ${selectedPaymentMethod === 'cod' ? 'Cash on Delivery' : 'Vodafone Cash'}\n\n`;
-            orderText += `📦 *Products Ordered:*\n`;
-
-            let total = 0;
-            cart.forEach((item, idx) => {
-                orderText += `${idx + 1}. ${item.title} - ${item.price.toLocaleString()} EGP\n`;
-                total += item.price;
-            });
-
-            orderText += `\n💰 *Total Amount:* ${total.toLocaleString()} EGP`;
-
-            // استبدل الرقم أدناه برقم الواتساب الخاص بك (متبوعاً بكود الدولة، مثلاً 20 للـ مصر)
-            const myWhatsAppNumber = "201069941223"; 
-            
-            const encodedMessage = encodeURIComponent(orderText);
-            const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${encodedMessage}`;
-
-            // فتح واتساب مباشرة بالأوردر
-            window.open(whatsappUrl, '_blank');
-
-            cart = [];
-            updateCart();
-            closeCheckoutModal();
-        }
-
+        // تشغيل عرض المنتجات عند فتح الصفحة
         renderProducts();
     </script>
 </body>
 </html>
-[https://your-site-name.netlify.app/?admin=farouk](https://your-site-name.netlify.app/?admin=farouk)
