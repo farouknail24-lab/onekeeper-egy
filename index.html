@@ -80,21 +80,6 @@
         html[dir="rtl"] .product-price-box { flex-direction: row-reverse; justify-content: flex-end; }
         .product-price { font-size: 16px; font-weight: 900; color: var(--accent); }
         .product-old-price { font-size: 13px; color: var(--text-muted); text-decoration: line-through; }
-
-        /* Admin Panel */
-        #admin-panel { display: none; background: #121212; border: 2px dashed var(--accent); padding: 35px; margin-bottom: 50px; border-radius: 12px; text-align: left; }
-        html[dir="rtl"] #admin-panel { text-align: right; }
-        #admin-panel h2 { margin-bottom: 25px; color: var(--accent); font-size: 20px; font-weight: 800; }
-        
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; margin-bottom: 8px; color: #bbb; font-weight: 600; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; background: #1c1c1c; border: 1px solid var(--border-color); color: #fff; border-radius: 6px; font-size: 14px; outline: none; }
-        .form-group input[type="file"] { padding: 9px; cursor: pointer; color: var(--accent); }
-        
-        .btn-delete-prod { width: 100%; padding: 8px; font-size: 11px; background: rgba(255,51,51,0.1); color: #ff4444; border: 1px solid rgba(255,51,51,0.2); border-radius: 6px; margin-top: 8px; cursor: pointer; font-weight: 700; }
-        .btn-reset { background: transparent; color: #888; border: 1px solid #444; padding: 10px 20px; font-size: 12px; border-radius: 6px; cursor: pointer; margin-top: 15px; font-weight: 600; }
-        .btn-reset:hover { color: #fff; border-color: #fff; }
     </style>
 </head>
 <body>
@@ -120,53 +105,28 @@
     </section>
 
     <div class="container" id="shop">
-        
-        <div id="admin-panel">
-            <h2 id="admin-title">⚙️ لوحة تحكم المدير (إضافة منتجات وصور)</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>اسم المنتج (Product Name)</label>
-                    <input type="text" id="p-name" placeholder="e.g. ONEKEEPER Solid">
-                </div>
-                <div class="form-group">
-                    <label>السعر القديم (Base Price)</label>
-                    <input type="text" id="p-old-price" placeholder="e.g. 4500">
-                </div>
-                <div class="form-group">
-                    <label>السعر الحالي (Current Price)</label>
-                    <input type="text" id="p-price" placeholder="e.g. 3500">
-                </div>
-                <div class="form-group">
-                    <label>خصم (Discount Tag)</label>
-                    <input type="text" id="p-discount" placeholder="e.g. 15% OFF">
-                </div>
-                <div class="form-group">
-                    <label>القسم (Category)</label>
-                    <select id="p-cat">
-                        <option value="GLOVES">GLOVES</option>
-                        <option value="EQUIPMENT">EQUIPMENT</option>
-                        <option value="CLOTHING">CLOTHING</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>اختر صور المنتج من جهازك (اختر أكثر من صورة)</label>
-                    <input type="file" id="p-files" accept="image/*" multiple>
-                </div>
-            </div>
-            <button class="btn" onclick="addNewProduct()">إضافة المنتج وعرضه فوراً</button>
-            <br>
-            <button class="btn-reset" onclick="resetDefaultProducts()">استعادة المنتج الافتراضي</button>
-        </div>
-
         <div class="section-title" id="sec-title">FEATURED PRODUCTS</div>
         <div class="products-grid" id="products-container"></div>
     </div>
 
     <script>
         let currentLang = localStorage.getItem('onekeeper_lang') || 'en';
-        let uploadedImagesBase64 = [];
-        const urlParams = new URLSearchParams(window.location.search);
-        const isAdmin = urlParams.get('admin') === 'farouk';
+
+        // قائمة المنتجات التي تظهر مباشرة للعملاء على السايت الرئيسي
+        const products = [
+            { 
+                name: "ONEKEEPER Solid", 
+                price: "3,500 EGP", 
+                oldPrice: "4,500 EGP",
+                discount: "",
+                cat: "GLOVES", 
+                imgs: [
+                    "https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80",
+                    "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=600&q=80"
+                ] 
+            }
+            // تقدر تزود أي منتج جديد هنا بنفس الطريقة بسهولة تامة
+        ];
 
         const translations = {
             en: {
@@ -175,11 +135,8 @@
                 heroDesc: "Professional goalkeeper gloves engineered with ultimate grip, precision comfort, and advanced German latex technology.",
                 heroBtn: "SHOP COLLECTION",
                 secTitle: "FEATURED PRODUCTS",
-                adminTitle: "⚙️ Admin Control Panel",
                 waBtn: "💬 Order via WhatsApp",
-                onlineBtn: "💳 Online Payment (InstaPay / Visa)",
-                delBtn: "Delete Product",
-                deleteConfirm: "Are you sure you want to delete this product?"
+                onlineBtn: "💳 Online Payment (InstaPay / Visa)"
             },
             ar: {
                 langBtn: "English 🇬🇧",
@@ -187,74 +144,10 @@
                 heroDesc: "قفازات حراس مرمى احترافية مصممة بأعلى مستوى ثبات، راحة فائقة، وبتكنولوجيا اللاتكس الألمانية المتقدمة.",
                 heroBtn: "تسوق المجموعة",
                 secTitle: "المنتجات المميزة",
-                adminTitle: "⚙️ لوحة تحكم المدير",
                 waBtn: "💬 اطلب عبر الواتساب",
-                onlineBtn: "💳 دفع أونلاين (إنستاباي / فيزا)",
-                delBtn: "حذف المنتج",
-                deleteConfirm: "هل أنت متأكد من حذف هذا المنتج؟"
+                onlineBtn: "💳 دفع أونلاين (إنستاباي / فيزا)"
             }
         };
-
-        const defaultProducts = [
-            { 
-                name: "ONEKEEPER Solid", 
-                price: "3500", 
-                oldPrice: "4500",
-                discount: "",
-                cat: "GLOVES", 
-                imgs: ["https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80"] 
-            }
-        ];
-
-        // معالجة الصور المختارة من الجهاز
-        document.getElementById('p-files').addEventListener('change', function(e) {
-            const files = e.target.files;
-            uploadedImagesBase64 = [];
-            if (files.length === 0) return;
-
-            let processedCount = 0;
-            for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        let width = img.width;
-                        let height = img.height;
-                        const max_size = 600;
-                        if (width > height) {
-                            if (width > max_size) { height *= max_size / width; width = max_size; }
-                        } else {
-                            if (height > max_size) { width *= max_size / height; height = max_size; }
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        uploadedImagesBase64.push(canvas.toDataURL('image/jpeg', 0.8));
-                        processedCount++;
-                        if(processedCount === files.length) {
-                            alert('تم تجهيز الصور بنجاح! اضغط الآن على زر الإضافة.');
-                        }
-                    }
-                    img.src = event.target.result;
-                }
-                reader.readAsDataURL(files[i]);
-            }
-        });
-
-        function getProducts() {
-            const stored = localStorage.getItem('onekeeper_products');
-            if (stored) {
-                try { return JSON.parse(stored); } catch(e) { return defaultProducts; }
-            }
-            return defaultProducts;
-        }
-
-        function saveProducts(prods) {
-            localStorage.setItem('onekeeper_products', JSON.stringify(prods));
-        }
 
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'ar' : 'en';
@@ -280,10 +173,6 @@
             document.getElementById('hero-desc').innerText = t.heroDesc;
             document.getElementById('hero-btn').innerText = t.heroBtn;
             document.getElementById('sec-title').innerText = t.secTitle;
-            
-            if(isAdmin) {
-                document.getElementById('admin-title').innerText = t.adminTitle;
-            }
 
             document.querySelectorAll('.nav-links a').forEach(a => {
                 a.innerText = a.getAttribute(`data-${currentLang}`);
@@ -293,10 +182,9 @@
         function renderProducts() {
             const container = document.getElementById('products-container');
             const t = translations[currentLang];
-            const allProducts = getProducts();
             container.innerHTML = '';
 
-            allProducts.forEach((p, pIndex) => {
+            products.forEach((p, pIndex) => {
                 const waMessage = encodeURIComponent(`مرحباً فاروق، أريد طلب هذا المنتج:\n- الاسم: ${p.name}\n- السعر: ${p.price}\n- القسم: ${p.cat}`);
                 const waLink = `https://wa.me/201069941223?text=${waMessage}`;
 
@@ -318,7 +206,6 @@
 
                 let discountHtml = p.discount ? `<div class="discount-badge">${p.discount}</div>` : '';
                 let oldPriceHtml = p.oldPrice ? `<span class="product-old-price">${p.oldPrice}</span>` : '';
-                let adminDeleteBtn = isAdmin ? `<button class="btn-delete-prod" onclick="deleteProduct(${pIndex})">${t.delBtn}</button>` : '';
 
                 container.innerHTML += `
                     <div class="product-card" id="card-${pIndex}">
@@ -336,7 +223,6 @@
                             </div>
                             <a href="${waLink}" target="_blank" class="btn btn-whatsapp">${t.waBtn}</a>
                             <a href="https://instapay.eg" target="_blank" class="btn btn-online">${t.onlineBtn}</a>
-                            ${adminDeleteBtn}
                         </div>
                     </div>
                 `;
@@ -360,56 +246,6 @@
             if (newIndex < 0) newIndex = imgs.length - 1;
 
             imgs[newIndex].classList.add('active');
-        }
-
-        function addNewProduct() {
-            const name = document.getElementById('p-name').value;
-            const price = document.getElementById('p-price').value;
-            const oldPrice = document.getElementById('p-old-price').value;
-            const discount = document.getElementById('p-discount').value;
-            const cat = document.getElementById('p-cat').value;
-
-            if(!name || !price) {
-                alert('Please enter product name and current price!');
-                return;
-            }
-
-            const imgs = uploadedImagesBase64.length > 0 ? uploadedImagesBase64 : ['https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=600&q=80'];
-
-            const allProducts = getProducts();
-            allProducts.push({ name, price, oldPrice, discount, cat, imgs });
-            saveProducts(allProducts);
-            
-            renderProducts();
-            alert('تم إضافة المنتج بنجاح وهيوضح فوراً على السايت!');
-            
-            // تفريغ الحقول
-            document.getElementById('p-name').value = '';
-            document.getElementById('p-price').value = '';
-            document.getElementById('p-old-price').value = '';
-            document.getElementById('p-discount').value = '';
-            document.getElementById('p-files').value = '';
-            uploadedImagesBase64 = [];
-        }
-
-        function deleteProduct(index) {
-            if(confirm(translations[currentLang].deleteConfirm)) {
-                const allProducts = getProducts();
-                allProducts.splice(index, 1);
-                saveProducts(allProducts);
-                renderProducts();
-            }
-        }
-
-        function resetDefaultProducts() {
-            if(confirm('هل تريد استعادة المنتجات الافتراضية؟')) {
-                saveProducts(defaultProducts);
-                renderProducts();
-            }
-        }
-
-        if (isAdmin) {
-            document.getElementById('admin-panel').style.display = 'block';
         }
 
         applyLanguage();
